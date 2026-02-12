@@ -1,3 +1,64 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "user1",
+      "description": "User Avatar 1",
+      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzA4MTA2ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user2",
+      "description": "User Avatar 2",
+      "imageUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzA4MTA2ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user3",
+      "description": "User Avatar 3",
+      "imageUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzA4MTA2ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user4",
+      "description": "User Avatar 4",
+      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzA4MTA2ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "user5",
+      "description": "User Avatar 5",
+      "imageUrl": "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzA4MTA2ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    },
+    {
+      "id": "sermon1",
+      "description": "Sermon Thumbnail 1",
+      "imageUrl": "https://images.unsplash.com/photo-1633917156997-42a9f2bcc6fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Y2h1cmNoJTIwY3Jvc3N8ZW58MHx8fHwxNzcwODY0NDA5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "church cross"
+    },
+    {
+      "id": "sermon2",
+      "description": "Sermon Thumbnail 2",
+      "imageUrl": "https://images.unsplash.com/photo-1499652848871-1527a310b13a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxvcGVuJTIwYmlibGV8ZW58MHx8fHwxNzcwODY0NDA5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "open bible"
+    },
+    {
+      "id": "sermon3",
+      "description": "Sermon Thumbnail 3",
+      "imageUrl": "https://images.unsplash.com/photo-1582221149334-9ed233ac15d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdGFpbmVkJTIwZ2xhc3N8ZW58MHx8fHwxNzcwODYxMTMzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stained glass"
+    },
+    {
+      "id": "sermon4",
+      "description": "Sermon Thumbnail 4",
+      "imageUrl": "https://images.unsplash.com/photo-1622598453695-4fbaf151aadc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b3JzaGlwJTIwc2VydmljZXxlbnwwfHx8fDE3NzA4NDU1ODd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "worship service"
+    },
+    {
+      "id": "chat_image_1",
+      "description": "Shared image in chat",
+      "imageUrl": "https://images.unsplash.com/photo-1768306661640-c3310c74e7ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb21tdW5pdHklMjBnYXRoZXJpbmd8ZW58MHx8fHwxNzcwODQzMzM4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "community gathering"
+    }
+  ]
 }
