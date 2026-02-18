@@ -1,4 +1,3 @@
-export const dynamic = "force-static"
 import { ChatDisplay } from '@/components/app/chat-display';
 import { ChatList } from '@/components/app/chat-list';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
