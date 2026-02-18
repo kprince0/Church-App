@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Church } from 'lucide-react';
 
@@ -8,13 +9,34 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { churchName } from '@/lib/data';
+import { loginWithEmail } from '@/lib/firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (event: React.FormEvent) => {
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push('/chat');
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get('email') || '');
+    const password = String(formData.get('password') || '');
+
+    setLoading(true);
+    try {
+      await loginWithEmail(email, password);
+      router.push('/about');
+    } catch (error) {
+      toast({
+        title: '로그인 실패',
+        description: '이메일 또는 비밀번호를 확인해주세요.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -24,30 +46,26 @@ export default function LoginPage() {
           <div className="mb-4 flex justify-center">
             <Church className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-headline">EkklesiaConnect</CardTitle>
-          <CardDescription>교회 공동체를 위한 공간에 오신 것을 환영합니다.</CardDescription>
+          <CardTitle className="text-xl font-headline">{churchName}</CardTitle>
+          <CardDescription>교회 공동체 앱 로그인</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">이메일</Label>
-              <Input id="email" type="email" placeholder="email@example.com" required />
+              <Input id="email" name="email" type="email" placeholder="email@example.com" required />
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">비밀번호</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline">
-                  비밀번호를 잊으셨나요?
-                </Link>
-              </div>
-              <Input id="password" type="password" required />
+              <Label htmlFor="password">비밀번호</Label>
+              <Input id="password" name="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">
-              로그인
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? '로그인 중...' : '로그인'}
             </Button>
           </form>
+
           <div className="mt-4 text-center text-sm">
-            아직 계정이 없으신가요?{' '}
+            새 교인이신가요?{' '}
             <Link href="/register" className="underline">
               교인 등록
             </Link>

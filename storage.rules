@@ -1,0 +1,53 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function memberDoc(uid) {
+      return firestore.get(/databases/(default)/documents/members/$(uid));
+    }
+
+    function roomDoc(chatId) {
+      return firestore.get(/databases/(default)/documents/chats/$(chatId));
+    }
+
+    function isAdmin() {
+      return signedIn() && (
+        memberDoc(request.auth.uid).data.isLeadPastor == true ||
+        memberDoc(request.auth.uid).data.position == '시무장로'
+      );
+    }
+
+    function isChatMember(chatId) {
+      return signedIn() && (
+        isAdmin() ||
+        request.auth.uid in roomDoc(chatId).data.members
+      );
+    }
+
+    match /chat-images/{chatId}/{fileName} {
+      allow read: if isChatMember(chatId);
+      allow write: if isChatMember(chatId) &&
+        request.resource.size < 10 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*');
+    }
+
+    match /chat-files/{chatId}/{fileName} {
+      allow read: if isChatMember(chatId);
+      allow write: if isChatMember(chatId) &&
+        request.resource.size < 25 * 1024 * 1024;
+    }
+
+    match /bulletins/{fileName} {
+      allow read: if signedIn();
+      allow write: if isAdmin() &&
+        request.resource.size < 25 * 1024 * 1024 &&
+        (
+          request.resource.contentType == 'application/pdf' ||
+          request.resource.contentType.matches('image/.*')
+        );
+    }
+  }
+}

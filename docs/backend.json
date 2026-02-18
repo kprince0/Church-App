@@ -1,0 +1,914 @@
+{
+  "entities": {
+    "Member": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Member",
+      "type": "object",
+      "description": "Represents a registered member of the church, including their personal information, contact details, church title, and family relationships.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Member entity."
+        },
+        "koreanName": {
+          "type": "string",
+          "description": "The member's full name in Korean."
+        },
+        "englishName": {
+          "type": "string",
+          "description": "The member's full legal name in English."
+        },
+        "title": {
+          "type": "string",
+          "description": "The member's church title or position. Options include: '없음' (No title), '서리집사' (Deacon), '안수집사' (Ordained Deacon), '은퇴장로' (Retired Elder), '시무장로' (Senior Elder), '목회자' (Pastor)."
+        },
+        "titleAppointmentDate": {
+          "type": "string",
+          "description": "The date when the member was appointed to their church title.",
+          "format": "date-time"
+        },
+        "titleAppointmentPlace": {
+          "type": "string",
+          "description": "The place where the member was appointed to their church title."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The member's primary phone number."
+        },
+        "email": {
+          "type": "string",
+          "description": "The member's email address.",
+          "format": "email"
+        },
+        "addressLine1": {
+          "type": "string",
+          "description": "The first line of the member's current address."
+        },
+        "addressLine2": {
+          "type": "string",
+          "description": "The second line of the member's current address (e.g., apartment, suite number)."
+        },
+        "city": {
+          "type": "string",
+          "description": "The city of the member's current address."
+        },
+        "state": {
+          "type": "string",
+          "description": "The state or province of the member's current address."
+        },
+        "zipCode": {
+          "type": "string",
+          "description": "The postal code of the member's current address."
+        },
+        "spouseId": {
+          "type": "string",
+          "description": "Reference to the spouse's Member ID, if they are also a registered member. (Relationship: Member 1:1 Member)"
+        },
+        "parentIds": {
+          "type": "array",
+          "description": "References to the parent's Member IDs, if they are also registered members. (Relationship: Member N:N Member)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "childrenIds": {
+          "type": "array",
+          "description": "References to the children's Member IDs, if they are also registered members. (Relationship: Member N:N Member)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the member record was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the member record was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "koreanName",
+        "englishName",
+        "title",
+        "phoneNumber",
+        "email",
+        "addressLine1",
+        "city",
+        "state",
+        "zipCode",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Department": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Department",
+      "type": "object",
+      "description": "Represents a department or ministry within the church (e.g., Worship, Education, Finance).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Department entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the department (e.g., 'Worship Department', 'Finance Department')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the department's purpose or activities."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the department record was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the department record was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ChatRoom": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatRoom",
+      "type": "object",
+      "description": "Represents a chat conversation, which can be either a private chat between two members or a group chat.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ChatRoom entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the chat room, primarily used for group chats (e.g., 'Worship Team Chat')."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of chat room, either 'private' for one-on-one chats or 'group' for multi-member chats."
+        },
+        "departmentId": {
+          "type": "string",
+          "description": "Reference to the Department ID if this chat room is specifically for a church department. (Relationship: Department 1:N ChatRoom)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the chat room was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the chat room was last updated (e.g., name changed, last message received).",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ChatParticipant": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatParticipant",
+      "type": "object",
+      "description": "Represents a member's participation in a specific chat room.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ChatParticipant entity."
+        },
+        "memberId": {
+          "type": "string",
+          "description": "Reference to the Member ID who is participating in the chat. (Relationship: Member 1:N ChatParticipant)"
+        },
+        "chatRoomId": {
+          "type": "string",
+          "description": "Reference to the ChatRoom ID the member is participating in. (Relationship: ChatRoom 1:N ChatParticipant)"
+        },
+        "joinedAt": {
+          "type": "string",
+          "description": "Timestamp when the member joined the chat room.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "memberId",
+        "chatRoomId",
+        "joinedAt"
+      ]
+    },
+    "Message": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Message",
+      "type": "object",
+      "description": "Represents a single message sent within a chat room.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Message entity."
+        },
+        "chatRoomId": {
+          "type": "string",
+          "description": "Reference to the ChatRoom ID where the message was sent. (Relationship: ChatRoom 1:N Message)"
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Reference to the Member ID who sent the message. (Relationship: Member 1:N Message)"
+        },
+        "content": {
+          "type": "string",
+          "description": "The text content of the message."
+        },
+        "sentAt": {
+          "type": "string",
+          "description": "Timestamp when the message was sent.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "chatRoomId",
+        "senderId",
+        "content",
+        "sentAt"
+      ]
+    },
+    "FileAttachment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FileAttachment",
+      "type": "object",
+      "description": "Represents a file or photo attached to a message.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the FileAttachment entity."
+        },
+        "messageId": {
+          "type": "string",
+          "description": "Reference to the Message ID this file is attached to. (Relationship: Message 1:N FileAttachment)"
+        },
+        "fileName": {
+          "type": "string",
+          "description": "The original name of the attached file."
+        },
+        "fileType": {
+          "type": "string",
+          "description": "The MIME type of the file (e.g., 'image/jpeg', 'application/pdf')."
+        },
+        "fileUrl": {
+          "type": "string",
+          "description": "The URL where the file is stored.",
+          "format": "uri"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "The URL for a thumbnail image, primarily for photo attachments.",
+          "format": "uri"
+        },
+        "uploadedAt": {
+          "type": "string",
+          "description": "Timestamp when the file was uploaded.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "messageId",
+        "fileName",
+        "fileType",
+        "fileUrl",
+        "uploadedAt"
+      ]
+    },
+    "Announcement": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Announcement",
+      "type": "object",
+      "description": "Represents an announcement sent by an administrator to individual members.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Announcement entity."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Reference to the Member ID who sent the announcement (expected to be an admin). (Relationship: Member 1:N Announcement)"
+        },
+        "recipientId": {
+          "type": "string",
+          "description": "Reference to the Member ID who is the recipient of this individual announcement. (Relationship: Member 1:N Announcement)"
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the announcement."
+        },
+        "content": {
+          "type": "string",
+          "description": "The main text content of the announcement."
+        },
+        "sentAt": {
+          "type": "string",
+          "description": "Timestamp when the announcement was sent.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "senderId",
+        "recipientId",
+        "title",
+        "content",
+        "sentAt"
+      ]
+    },
+    "TithingRecord": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "TithingRecord",
+      "type": "object",
+      "description": "Represents a single tithing contribution made by a church member.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the TithingRecord entity."
+        },
+        "memberId": {
+          "type": "string",
+          "description": "Reference to the Member ID who made the tithe. (Relationship: Member 1:N TithingRecord)"
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount of the tithing contribution."
+        },
+        "tithingDate": {
+          "type": "string",
+          "description": "The date when the tithe was made.",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string",
+          "description": "An optional description or memo for the tithing record."
+        },
+        "recordedByMemberId": {
+          "type": "string",
+          "description": "Reference to the Member ID (expected to be a finance elder) who recorded this tithing. (Relationship: Member 1:N TithingRecord)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the tithing record was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the tithing record was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "memberId",
+        "amount",
+        "tithingDate",
+        "recordedByMemberId",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Hymn": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Hymn",
+      "type": "object",
+      "description": "Represents a single hymn from the integrated Korean/English New Hymnal.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Hymn entity."
+        },
+        "hymnNumber": {
+          "type": "number",
+          "description": "The official number of the hymn in the hymnal."
+        },
+        "koreanTitle": {
+          "type": "string",
+          "description": "The title of the hymn in Korean."
+        },
+        "englishTitle": {
+          "type": "string",
+          "description": "The title of the hymn in English."
+        },
+        "koreanLyrics": {
+          "type": "string",
+          "description": "The full lyrics of the hymn in Korean."
+        },
+        "englishLyrics": {
+          "type": "string",
+          "description": "The full lyrics of the hymn in English."
+        },
+        "sheetMusicUrl": {
+          "type": "string",
+          "description": "URL to copyright-free sheet music for the hymn.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "hymnNumber",
+        "koreanTitle",
+        "koreanLyrics"
+      ]
+    },
+    "BibleBook": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BibleBook",
+      "type": "object",
+      "description": "Represents a book of the Bible (e.g., Genesis, Matthew).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the BibleBook entity."
+        },
+        "koreanName": {
+          "type": "string",
+          "description": "The name of the Bible book in Korean."
+        },
+        "englishName": {
+          "type": "string",
+          "description": "The name of the Bible book in English."
+        },
+        "abbreviation": {
+          "type": "string",
+          "description": "A common abbreviation for the Bible book (e.g., '창', 'Gen')."
+        },
+        "bookOrder": {
+          "type": "number",
+          "description": "The canonical order of the Bible book (e.g., Genesis is 1, Exodus is 2)."
+        }
+      },
+      "required": [
+        "id",
+        "koreanName",
+        "englishName",
+        "abbreviation",
+        "bookOrder"
+      ]
+    },
+    "BibleChapter": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BibleChapter",
+      "type": "object",
+      "description": "Represents a chapter within a Bible book.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the BibleChapter entity."
+        },
+        "bookId": {
+          "type": "string",
+          "description": "Reference to the BibleBook ID this chapter belongs to. (Relationship: BibleBook 1:N BibleChapter)"
+        },
+        "chapterNumber": {
+          "type": "number",
+          "description": "The sequential number of the chapter within its book."
+        }
+      },
+      "required": [
+        "id",
+        "bookId",
+        "chapterNumber"
+      ]
+    },
+    "BibleVerse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BibleVerse",
+      "type": "object",
+      "description": "Represents a single verse of the Bible, including its Korean and English text.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the BibleVerse entity."
+        },
+        "chapterId": {
+          "type": "string",
+          "description": "Reference to the BibleChapter ID this verse belongs to. (Relationship: BibleChapter 1:N BibleVerse)"
+        },
+        "verseNumber": {
+          "type": "number",
+          "description": "The sequential number of the verse within its chapter."
+        },
+        "koreanText": {
+          "type": "string",
+          "description": "The text of the Bible verse in Korean (Revised Korean Version)."
+        },
+        "englishText": {
+          "type": "string",
+          "description": "The text of the Bible verse in English (e.g., KJV, NIV, etc.)."
+        }
+      },
+      "required": [
+        "id",
+        "chapterId",
+        "verseNumber",
+        "koreanText"
+      ]
+    },
+    "Sermon": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Sermon",
+      "type": "object",
+      "description": "Represents a recorded sermon, including its details and a link to its video.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Sermon entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the sermon."
+        },
+        "preacherId": {
+          "type": "string",
+          "description": "Reference to the Member ID of the preacher. (Relationship: Member 1:N Sermon)"
+        },
+        "sermonDate": {
+          "type": "string",
+          "description": "The date when the sermon was delivered.",
+          "format": "date-time"
+        },
+        "youtubeUrl": {
+          "type": "string",
+          "description": "The YouTube URL where the sermon video is hosted.",
+          "format": "uri"
+        },
+        "thumbnailUrl": {
+          "type": "string",
+          "description": "The URL for the sermon video's thumbnail image.",
+          "format": "uri"
+        },
+        "uploadedByMemberId": {
+          "type": "string",
+          "description": "Reference to the Member ID (expected to be a Senior Elder) who uploaded this sermon link. (Relationship: Member 1:N Sermon)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the sermon record was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the sermon record was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "preacherId",
+        "sermonDate",
+        "youtubeUrl",
+        "uploadedByMemberId",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Bulletin": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Bulletin",
+      "type": "object",
+      "description": "Represents a weekly church bulletin, available as a file upload.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Bulletin entity."
+        },
+        "bulletinDate": {
+          "type": "string",
+          "description": "The date for which this weekly bulletin is valid.",
+          "format": "date-time"
+        },
+        "fileUrl": {
+          "type": "string",
+          "description": "The URL to the uploaded bulletin file (PDF, JPG, or PNG).",
+          "format": "uri"
+        },
+        "uploadedAt": {
+          "type": "string",
+          "description": "Timestamp when the bulletin file was uploaded.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "bulletinDate",
+        "fileUrl",
+        "uploadedAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/members/{memberId}",
+        "definition": {
+          "entityName": "Member",
+          "schema": {
+            "$ref": "#/backend/entities/Member"
+          },
+          "description": "Stores individual member profiles. The document ID (`memberId`) should correspond to the Firebase Auth UID. Read/write access is typically restricted to the owner (`request.auth.uid == memberId`) or administrative roles. Basic profile information can be viewable by other members."
+        }
+      },
+      {
+        "path": "/roles_seniorElders/{seniorElderId}",
+        "definition": {
+          "entityName": "Member",
+          "schema": {
+            "$ref": "#/backend/entities/Member"
+          },
+          "description": "Designated collection to grant Senior Elder role based on document existence. The document ID (`seniorElderId`) must be the Firebase Auth UID of the member. This enables robust DBAC (Database Access Control) without custom claims.",
+          "params": [
+            {
+              "name": "seniorElderId",
+              "description": "The Firebase Auth UID of a member who has the Senior Elder role."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_leadPastors/{leadPastorId}",
+        "definition": {
+          "entityName": "Member",
+          "schema": {
+            "$ref": "#/backend/entities/Member"
+          },
+          "description": "Designated collection to grant Lead Pastor role based on document existence. The document ID (`leadPastorId`) must be the Firebase Auth UID of the member. This enables robust DBAC without custom claims.",
+          "params": [
+            {
+              "name": "leadPastorId",
+              "description": "The Firebase Auth UID of a member who has the Lead Pastor role."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_financeElders/{financeElderId}",
+        "definition": {
+          "entityName": "Member",
+          "schema": {
+            "$ref": "#/backend/entities/Member"
+          },
+          "description": "Designated collection to grant Finance Elder role based on document existence. The document ID (`financeElderId`) must be the Firebase Auth UID of the member. This enables robust DBAC without custom claims.",
+          "params": [
+            {
+              "name": "financeElderId",
+              "description": "The Firebase Auth UID of a member who has the Finance Elder role."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admins/{adminId}",
+        "definition": {
+          "entityName": "Member",
+          "schema": {
+            "$ref": "#/backend/entities/Member"
+          },
+          "description": "Designated collection for general administrative roles based on document existence. The document ID (`adminId`) must be the Firebase Auth UID of the member. This enables robust DBAC without custom claims.",
+          "params": [
+            {
+              "name": "adminId",
+              "description": "The Firebase Auth UID of a member who has a general Admin role."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/departments/{departmentId}",
+        "definition": {
+          "entityName": "Department",
+          "schema": {
+            "$ref": "#/backend/entities/Department"
+          },
+          "description": "Stores information about various church departments or ministries. This collection is publicly readable, with write access restricted to administrators."
+        }
+      },
+      {
+        "path": "/chatRooms/{chatRoomId}",
+        "definition": {
+          "entityName": "ChatRoom",
+          "schema": {
+            "$ref": "#/backend/entities/ChatRoom"
+          },
+          "description": "Represents individual or group chat rooms. Includes denormalized `members: { [memberId]: true }` map for authorization checks without `get()` calls on subcollections. Also includes `type` ('private', 'group', 'department') and `departmentId` if applicable."
+        }
+      },
+      {
+        "path": "/chatRooms/{chatRoomId}/participants/{memberId}",
+        "definition": {
+          "entityName": "ChatParticipant",
+          "schema": {
+            "$ref": "#/backend/entities/ChatParticipant"
+          },
+          "description": "Records a member's explicit participation in a chat room. The document ID (`memberId`) matches the participant's Firebase Auth UID. This subcollection is primarily used for `exists()` checks in security rules for message/attachment access, fulfilling Authorization Independence.",
+          "params": [
+            {
+              "name": "chatRoomId",
+              "description": "The ID of the parent ChatRoom."
+            },
+            {
+              "name": "memberId",
+              "description": "The Firebase Auth UID of the participating member."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/chatRooms/{chatRoomId}/messages/{messageId}",
+        "definition": {
+          "entityName": "Message",
+          "schema": {
+            "$ref": "#/backend/entities/Message"
+          },
+          "description": "Stores individual messages within a chat room. Includes denormalized `chatRoomId` and `senderId` for authorization independence. Access is granted if the user is a participant (checked via `exists()` on the `participants` subcollection) or holds a global role (Senior Elder, Lead Pastor).",
+          "params": [
+            {
+              "name": "chatRoomId",
+              "description": "The ID of the parent ChatRoom."
+            },
+            {
+              "name": "messageId",
+              "description": "The ID of the message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/chatRooms/{chatRoomId}/messages/{messageId}/fileAttachments/{fileAttachmentId}",
+        "definition": {
+          "entityName": "FileAttachment",
+          "schema": {
+            "$ref": "#/backend/entities/FileAttachment"
+          },
+          "description": "Stores details for files attached to messages. Includes denormalized `chatRoomId`, `messageId`, and `senderId` for authorization independence. Access mirrors that of the parent message, utilizing `exists()` checks on the `participants` subcollection or global roles.",
+          "params": [
+            {
+              "name": "chatRoomId",
+              "description": "The ID of the parent ChatRoom."
+            },
+            {
+              "name": "messageId",
+              "description": "The ID of the parent Message."
+            },
+            {
+              "name": "fileAttachmentId",
+              "description": "The ID of the file attachment."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/members/{recipientId}/announcements/{announcementId}",
+        "definition": {
+          "entityName": "Announcement",
+          "schema": {
+            "$ref": "#/backend/entities/Announcement"
+          },
+          "description": "Stores individual announcements sent to specific members. The document ID (`announcementId`) is generated, and `recipientId` is explicitly in the path, matching the recipient's Firebase Auth UID. Includes denormalized `senderId` (an admin). Read access is for the recipient or admins; write access is for admins.",
+          "params": [
+            {
+              "name": "recipientId",
+              "description": "The Firebase Auth UID of the member receiving the announcement."
+            },
+            {
+              "name": "announcementId",
+              "description": "The ID of the announcement."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/members/{memberId}/tithingRecords/{tithingRecordId}",
+        "definition": {
+          "entityName": "TithingRecord",
+          "schema": {
+            "$ref": "#/backend/entities/TithingRecord"
+          },
+          "description": "Stores individual tithing contributions for a member. The `memberId` in the path corresponds to the tithing member's Firebase Auth UID. Includes denormalized `recordedByMemberId` (a finance elder). Read access is for the owner or finance elders; write access is for finance elders.",
+          "params": [
+            {
+              "name": "memberId",
+              "description": "The Firebase Auth UID of the member who made the tithe."
+            },
+            {
+              "name": "tithingRecordId",
+              "description": "The ID of the tithing record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/hymns/{hymnId}",
+        "definition": {
+          "entityName": "Hymn",
+          "schema": {
+            "$ref": "#/backend/entities/Hymn"
+          },
+          "description": "Stores data for each hymn in the hymnal, including lyrics and sheet music URLs. This collection is publicly readable for all users."
+        }
+      },
+      {
+        "path": "/bibleBooks/{bibleBookId}",
+        "definition": {
+          "entityName": "BibleBook",
+          "schema": {
+            "$ref": "#/backend/entities/BibleBook"
+          },
+          "description": "Stores information about each book of the Bible. This collection is publicly readable for all users."
+        }
+      },
+      {
+        "path": "/bibleBooks/{bibleBookId}/chapters/{bibleChapterId}",
+        "definition": {
+          "entityName": "BibleChapter",
+          "schema": {
+            "$ref": "#/backend/entities/BibleChapter"
+          },
+          "description": "Stores information about each chapter within a Bible book. This collection is publicly readable for all users.",
+          "params": [
+            {
+              "name": "bibleBookId",
+              "description": "The ID of the parent BibleBook."
+            },
+            {
+              "name": "bibleChapterId",
+              "description": "The ID of the Bible chapter."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/bibleBooks/{bibleBookId}/chapters/{bibleChapterId}/verses/{bibleVerseId}",
+        "definition": {
+          "entityName": "BibleVerse",
+          "schema": {
+            "$ref": "#/backend/entities/BibleVerse"
+          },
+          "description": "Stores individual Bible verses with Korean and English text. This collection is publicly readable for all users.",
+          "params": [
+            {
+              "name": "bibleBookId",
+              "description": "The ID of the grandparent BibleBook."
+            },
+            {
+              "name": "bibleChapterId",
+              "description": "The ID of the parent BibleChapter."
+            },
+            {
+              "name": "bibleVerseId",
+              "description": "The ID of the Bible verse."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/sermons/{sermonId}",
+        "definition": {
+          "entityName": "Sermon",
+          "schema": {
+            "$ref": "#/backend/entities/Sermon"
+          },
+          "description": "Stores information about recorded sermons, including YouTube links. This collection is publicly readable. Write access (uploading new sermon links) is restricted to Senior Elders, with `uploadedByMemberId` denormalized for rule checks."
+        }
+      },
+      {
+        "path": "/bulletins/{bulletinId}",
+        "definition": {
+          "entityName": "Bulletin",
+          "schema": {
+            "$ref": "#/backend/entities/Bulletin"
+          },
+          "description": "Stores weekly church bulletins. This collection is publicly readable. Write access (uploading new bulletins) is restricted to administrators."
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure for EkklesiaConnect prioritizes Authorization Independence, Structural Segregation, and consistent Access Modeling to ensure robust, debuggable, and scalable security rules. \n\n**Authorization Independence via Denormalization:**\n*   **Chat Rooms (`/chatRooms/{chatRoomId}`), Messages (`/chatRooms/{chatRoomId}/messages/{messageId}`), and File Attachments (`/chatRooms/{chatRoomId}/messages/{messageId}/fileAttachments/{fileAttachmentId}`):** To avoid hierarchical authorization dependencies (i.e., `get()` operations on parent documents), chat room documents will contain a denormalized map of `members: { [memberId]: true }`. For subcollections like messages and attachments, security rules will leverage the `exists()` function on the `/chatRooms/{chatRoomId}/participants/{memberId}` subcollection. This `participants` subcollection explicitly marks a user's membership in a chat room. By checking `exists(/chatRooms/$(resource.data.chatRoomId)/participants/$(request.auth.uid))`, rules can verify membership without needing to read the entire parent `chatRoom` document, fulfilling the Authorization Independence mandate. For message and attachment creation, the `senderId` will be denormalized into the document, and checked against `request.auth.uid` along with the `exists()` check for participation.\n*   **Announcements (`/members/{recipientId}/announcements/{announcementId}`):** These are private to the recipient. The `recipientId` is explicitly part of the document path, making ownership clear and removing the need for `get()` calls. The `senderId` (an admin) is denormalized within the document, and sender authorization is managed by checking the `roles_admins` collection.\n*   **Tithing Records (`/members/{memberId}/tithingRecords/{tithingRecordId}`):** Similar to announcements, `memberId` is in the path for individual ownership. The `recordedByMemberId` (finance elder) is denormalized, and finance elder authorization is managed by checking the `roles_financeElders` collection.\n*   **Sermons (`/sermons/{sermonId}`):** The `uploadedByMemberId` (senior elder) is denormalized. Authorization for uploads is based on the `roles_seniorElders` collection.\n\n**Structural Segregation for QAPs (Query As A Policy):**\n*   **Role Collections:** Dedicated, top-level collections like `/roles_seniorElders/{seniorElderId}`, `/roles_leadPastors/{leadPastorId}`, `/roles_financeElders/{financeElderId}`, and `/roles_admins/{adminId}` are used for Database Access Control (DBAC). The *existence* of a document in these collections grants the respective role. This makes rules clear and allows efficient role-based checks (e.g., `allow read: if exists(/roles_seniorElders/$(request.auth.uid))`).\n*   **Public Data:** Collections like `/hymns`, `/bibleBooks`, `/departments`, `/sermons`, and `/bulletins` are segregated as publicly readable. This simplifies security rules to `allow read: true` for all authenticated users (or even unauthenticated if desired), as there are no mixed security postures within these collections.\n*   **Private User Data:** `/members/{memberId}` and its subcollections (`/members/{memberId}/tithingRecords`, `/members/{memberId}/announcements`) are designed using hierarchical paths to inherently enforce ownership. A user's `memberId` must match the path's `{memberId}` wildcard, making read access for individual users straightforward and secure.\n*   **Chat Access:** Group chat access for Senior Elders and the Lead Pastor is implemented as a global `exists()` check against their respective role collections, ensuring they can query and read all relevant chat data regardless of individual room membership. Regular members, however, must be explicitly listed as a `participant` via `exists()` for a specific chat room.\n\nThe user's reported `auth/invalid-api-key` error is a client-side Firebase configuration issue (likely a missing or incorrect `apiKey` in `firebaseConfig`) and is unrelated to the Firestore data structure design itself. This structure design assumes a correctly initialized Firebase client and authenticated users (`request.auth.uid` is available)."
+  }
+}

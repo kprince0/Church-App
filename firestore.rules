@@ -1,0 +1,247 @@
+/**
+ * EkklesiaConnect Security Rules
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership and role-based access control (RBAC) model. 
+ * Authorization is decoupled from data structures where possible to ensure performance 
+ * and scalability, utilizing specific "role collections" for database-wide permissions.
+ *
+ * Data Structure:
+ * - /members/{userId}: Individual user profiles and private data subcollections.
+ * - /roles_{roleName}: Dedicated collections where document existence defines user roles.
+ * - /chatRooms: Collaborative spaces secured via participant lists and subcollection checks.
+ * - /hymns, /bibleBooks, /sermons, /bulletins: Publicly readable content collections.
+ *
+ * Key Security Decisions:
+ * 1. Database Access Control (DBAC): Roles like Admin, Senior Elder, and Finance Elder 
+ *    are determined by the existence of a document in specific top-level collections 
+ *    matching the user's UID.
+ * 2. Authorization Independence: Subcollections (like messages) use exists() checks on 
+ *    membership collections to avoid expensive parent-document lookups.
+ * 3. Prototyping Flexibility: Rules enforce WHO can write (authorization) and 
+ *    relational integrity (linkage IDs), but do not enforce strict schema or data types 
+ *    for general content fields.
+ * 4. Structural Segregation: Public content is strictly separated from private user data 
+ *    to simplify query logic and prevent accidental data leaks.
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- GLOBAL HELPER FUNCTIONS ---
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Role-based checks using DBAC pattern
+    function hasRole(roleCollection) {
+      return isSignedIn() && exists(/databases/$(database)/documents/$(roleCollection)/$(request.auth.uid));
+    }
+
+    function isAdmin() {
+      return hasRole('roles_admins');
+    }
+
+    function isSeniorElder() {
+      return hasRole('roles_seniorElders');
+    }
+
+    function isLeadPastor() {
+      return hasRole('roles_leadPastors');
+    }
+
+    function isFinanceElder() {
+      return hasRole('roles_financeElders');
+    }
+
+    // Helper for checking if a user is a participant in a chat room
+    function isChatParticipant(chatRoomId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/chatRooms/$(chatRoomId)/participants/$(request.auth.uid));
+    }
+
+    // Helper for destructive operations (update/delete)
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    // --- COLLECTION RULES ---
+
+    /**
+     * @description Rules for the Role Collections. Only Admins can manage roles.
+     * @path /roles_{roleName}/{uid}
+     * @allow (get) Any signed-in user checking a role.
+     * @deny (write) Any non-admin attempting to change roles.
+     * @principle Structural Segregation for RBAC.
+     */
+    match /roles_seniorElders/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /roles_leadPastors/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /roles_financeElders/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /roles_admins/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    /**
+     * @description Stores individual member profiles. Owners can manage their data; church leadership can view.
+     * @path /members/{memberId}
+     * @allow (create) if the UID matches the document ID.
+     * @deny (delete) Profile deletion is restricted to admins.
+     * @principle Self-Creation and Ownership.
+     */
+    match /members/{memberId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isOwner(memberId) && request.resource.data.id == memberId;
+      allow update: if isExistingOwner(memberId) && request.resource.data.id == memberId;
+      allow delete: if isAdmin() && resource != null;
+
+      /**
+       * @description Private announcements for a specific member.
+       * @path /members/{memberId}/announcements/{announcementId}
+       * @allow (get) The recipient or an admin.
+       * @deny (write) Non-admins attempting to send or modify announcements.
+       * @principle Path-based ownership and Role-based writes.
+       */
+      match /announcements/{announcementId} {
+        allow get, list: if isOwner(memberId) || isAdmin();
+        allow create: if isAdmin();
+        allow update, delete: if isAdmin() && resource != null;
+      }
+
+      /**
+       * @description Private tithing records. Sensitive financial data.
+       * @path /members/{memberId}/tithingRecords/{tithingRecordId}
+       * @allow (get) The owner or a finance elder.
+       * @deny (create) The owner cannot create their own tithing record.
+       * @principle Ownership and Role-based segregation.
+       */
+      match /tithingRecords/{tithingRecordId} {
+        allow get, list: if isOwner(memberId) || isFinanceElder();
+        allow create: if isFinanceElder() && request.resource.data.memberId == memberId;
+        allow update, delete: if isFinanceElder() && resource != null;
+      }
+    }
+
+    /**
+     * @description Church departments. Publicly visible, admin managed.
+     * @path /departments/{departmentId}
+     * @allow (get) Publicly readable.
+     * @deny (write) Any non-admin attempting modification.
+     * @principle Public Read with Owner-Only (Admin) Writes.
+     */
+    match /departments/{departmentId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Chat room containers. Secured via denormalized member maps.
+     * @path /chatRooms/{chatRoomId}
+     * @allow (get) Participants, Senior Elders, or Lead Pastors.
+     * @deny (create) Users not including themselves in the member list.
+     * @principle Shared Access (Closed Collaborators).
+     */
+    match /chatRooms/{chatRoomId} {
+      allow get: if isSignedIn() && (resource.data.members[request.auth.uid] == true || isSeniorElder() || isLeadPastor());
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.members[request.auth.uid] == true;
+      allow update: if isSignedIn() && (resource.data.members[request.auth.uid] == true || isAdmin());
+      allow delete: if isAdmin() && resource != null;
+
+      /**
+       * @description Explicit participation markers for chat rooms.
+       * @path /chatRooms/{chatRoomId}/participants/{memberId}
+       */
+      match /participants/{memberId} {
+        allow get, list: if isSignedIn() && (isChatParticipant(chatRoomId) || isSeniorElder() || isLeadPastor());
+        allow create: if isOwner(memberId);
+        allow update, delete: if isExistingOwner(memberId) || isAdmin();
+      }
+
+      /**
+       * @description Messages within a chat room.
+       * @path /chatRooms/{chatRoomId}/messages/{messageId}
+       */
+      match /messages/{messageId} {
+        allow get, list: if isSignedIn() && (isChatParticipant(chatRoomId) || isSeniorElder() || isLeadPastor());
+        allow create: if isChatParticipant(chatRoomId) && request.resource.data.senderId == request.auth.uid;
+        allow update: if resource != null && resource.data.senderId == request.auth.uid;
+        allow delete: if (resource != null && resource.data.senderId == request.auth.uid) || isAdmin();
+
+        /**
+         * @description Files attached to messages.
+         * @path /chatRooms/{chatRoomId}/messages/{messageId}/fileAttachments/{fileAttachmentId}
+         */
+        match /fileAttachments/{fileAttachmentId} {
+          allow get, list: if isSignedIn() && (isChatParticipant(chatRoomId) || isSeniorElder() || isLeadPastor());
+          allow create: if isChatParticipant(chatRoomId);
+          allow update, delete: if isAdmin() && resource != null;
+        }
+      }
+    }
+
+    /**
+     * @description Hymnal data.
+     * @path /hymns/{hymnId}
+     */
+    match /hymns/{hymnId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    /**
+     * @description Bible content structure.
+     * @path /bibleBooks/{bibleBookId}
+     */
+    match /bibleBooks/{bibleBookId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+
+      match /chapters/{chapterId} {
+        allow get, list: if true;
+        allow create, update, delete: if isAdmin();
+
+        match /verses/{verseId} {
+          allow get, list: if true;
+          allow create, update, delete: if isAdmin();
+        }
+      }
+    }
+
+    /**
+     * @description Sermon video links.
+     * @path /sermons/{sermonId}
+     * @allow (create) Senior Elders or Admins.
+     * @principle Role-based write access.
+     */
+    match /sermons/{sermonId} {
+      allow get, list: if true;
+      allow create: if isSeniorElder() || isAdmin();
+      allow update, delete: if (isSeniorElder() || isAdmin()) && resource != null;
+    }
+
+    /**
+     * @description Weekly church bulletins.
+     * @path /bulletins/{bulletinId}
+     */
+    match /bulletins/{bulletinId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">잭슨빌 한인장로교회</string>
+    <string name="title_activity_main">잭슨빌 한인장로교회</string>
+    <string name="package_name">org.jkpc.app</string>
+    <string name="custom_url_scheme">org.jkpc.app</string>
+</resources>
