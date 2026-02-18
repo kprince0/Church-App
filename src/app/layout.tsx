@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { churchName } from '@/lib/data';
 import { PwaRegister } from '@/components/app/pwa-register';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 const ptSans = PT_Sans({
   subsets: ['latin'],
@@ -42,9 +43,11 @@ export default function RootLayout({
         />
       </head>
       <body className={`${ptSans.variable} h-full font-body antialiased`}>
-        <PwaRegister />
-        {children}
-        <Toaster />
+        <FirebaseClientProvider>
+          <PwaRegister />
+          {children}
+          <Toaster />
+        </FirebaseClientProvider>
       </body>
     </html>
   );
